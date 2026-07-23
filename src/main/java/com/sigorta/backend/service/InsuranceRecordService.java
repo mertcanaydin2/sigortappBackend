@@ -74,6 +74,11 @@ public class InsuranceRecordService {
     }
 
     @Transactional(readOnly = true)
+    public List<InsuranceRecord> getUpcomingRenewals() {
+        return insuranceRecordRepository.findUpcomingRenewals();
+    }
+
+    @Transactional(readOnly = true)
     public List<InsuranceRecord> getInsuranceRecordsExpiringWithinSevenDays() {
         LocalDate today = LocalDate.now();
         return insuranceRecordRepository.findByPolicyEndDateBetween(today, today.plusDays(7));
@@ -94,11 +99,22 @@ public class InsuranceRecordService {
     public InsuranceRecord createInsuranceRecord(InsuranceRecord insuranceRecord) {
         validateUniquePolicyNumber(insuranceRecord);
         insuranceRecord.setId(null);
+        insuranceRecord.setIsContacted(false);
+        return insuranceRecordRepository.save(insuranceRecord);
+    }
+
+    public InsuranceRecord updateContactedStatus(Long id, boolean contacted) {
+        InsuranceRecord insuranceRecord = getInsuranceRecordById(id);
+        insuranceRecord.setIsContacted(contacted);
         return insuranceRecordRepository.save(insuranceRecord);
     }
 
     public InsuranceRecord updateInsuranceRecord(Long id, InsuranceRecord updatedRecord) {
         InsuranceRecord existingRecord = getInsuranceRecordById(id);
+        boolean startsNewPolicyTerm = startsNewPolicyTerm(
+                existingRecord.getPolicyEndDate(),
+                updatedRecord.getPolicyEndDate()
+        );
 
         existingRecord.setIssueDate(updatedRecord.getIssueDate());
         existingRecord.setStartDate(updatedRecord.getStartDate());
@@ -115,6 +131,11 @@ public class InsuranceRecordService {
         existingRecord.setPaymentMethod(updatedRecord.getPaymentMethod());
         existingRecord.setPhoneNumber(updatedRecord.getPhoneNumber());
         existingRecord.setEmail(updatedRecord.getEmail());
+        if (startsNewPolicyTerm) {
+            existingRecord.setIsContacted(false);
+        } else if (updatedRecord.getIsContacted() != null) {
+            existingRecord.setIsContacted(updatedRecord.getIsContacted());
+        }
 
         return insuranceRecordRepository.save(existingRecord);
     }
@@ -138,6 +159,11 @@ public class InsuranceRecordService {
                 .replaceAll("\\s+", " ")
                 .trim()
                 .toUpperCase(Locale.ROOT);
+    }
+
+    private boolean startsNewPolicyTerm(LocalDate currentEndDate, LocalDate updatedEndDate) {
+        return updatedEndDate != null
+                && (currentEndDate == null || updatedEndDate.isAfter(currentEndDate));
     }
 
     private void validateUniquePolicyNumber(InsuranceRecord insuranceRecord) {

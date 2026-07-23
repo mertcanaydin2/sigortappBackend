@@ -41,6 +41,15 @@ public interface InsuranceRecordRepository extends JpaRepository<InsuranceRecord
             """)
     List<InsuranceRecord> findApproachingExpirations(@Param("date") LocalDate date);
 
+    @Query("""
+            select record
+            from InsuranceRecord record
+            where record.policyEndDate is not null
+              and record.policyEndDate >= CURRENT_DATE
+            order by record.policyEndDate asc
+            """)
+    List<InsuranceRecord> findUpcomingRenewals();
+
     List<InsuranceRecord> findByPolicyEndDateBetween(LocalDate startDate, LocalDate endDate);
 
     @Query("SELECT i FROM InsuranceRecord i WHERE i.policyEndDate < CURRENT_DATE ORDER BY i.policyEndDate DESC")

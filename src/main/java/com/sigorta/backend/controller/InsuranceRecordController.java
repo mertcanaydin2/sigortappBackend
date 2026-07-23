@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -60,6 +61,11 @@ public class InsuranceRecordController {
     @GetMapping("/api/insurance/expired")
     public ResponseEntity<List<InsuranceRecord>> getExpiredInsuranceRecords() {
         return ResponseEntity.ok(insuranceRecordService.getExpiredInsuranceRecords());
+    }
+
+    @GetMapping("/api/insurance/upcoming-renewals")
+    public ResponseEntity<List<InsuranceRecord>> getUpcomingRenewals() {
+        return ResponseEntity.ok(insuranceRecordService.getUpcomingRenewals());
     }
 
     @GetMapping("/api/insurance/check-tc/{tcTaxNo}")
@@ -115,6 +121,14 @@ public class InsuranceRecordController {
             @RequestBody InsuranceRecord insuranceRecord
     ) {
         return ResponseEntity.ok(insuranceRecordService.updateInsuranceRecord(id, insuranceRecord));
+    }
+
+    @PatchMapping("/api/insurance/{id}/contacted")
+    public ResponseEntity<InsuranceRecord> updateContactedStatus(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "true") boolean contacted
+    ) {
+        return ResponseEntity.ok(insuranceRecordService.updateContactedStatus(id, contacted));
     }
 
     @DeleteMapping("/api/insurance-records/{id}")
