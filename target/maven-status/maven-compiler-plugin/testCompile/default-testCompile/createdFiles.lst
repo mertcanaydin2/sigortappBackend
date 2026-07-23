@@ -1,0 +1,5 @@
+com\sigorta\backend\service\MessageTemplateServiceTest.class
+com\sigorta\backend\service\NotificationControllerTest.class
+com\sigorta\backend\service\NotificationServiceTest.class
+com\sigorta\backend\service\PdfParsingServiceTest.class
+com\sigorta\backend\service\ReportServiceTest.class

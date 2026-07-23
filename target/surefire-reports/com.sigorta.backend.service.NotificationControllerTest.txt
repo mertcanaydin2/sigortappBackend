@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.sigorta.backend.service.NotificationControllerTest
+-------------------------------------------------------------------------------
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.770 s -- in com.sigorta.backend.service.NotificationControllerTest
