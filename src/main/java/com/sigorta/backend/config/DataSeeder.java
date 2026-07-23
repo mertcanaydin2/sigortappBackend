@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class DataSeeder implements CommandLineRunner {
 
     private static final String DEFAULT_ADMIN_USERNAME = "admin";
-    private static final String DEFAULT_ADMIN_PASSWORD = "admin123";
+    private static final String DEFAULT_ADMIN_PASSWORD = "123456";
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;

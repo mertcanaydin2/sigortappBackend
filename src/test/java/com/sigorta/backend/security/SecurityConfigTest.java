@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.DefaultCorsProcessor;
@@ -19,6 +20,11 @@ class SecurityConfigTest {
     @Test
     void corsConfigurationAllowsFrontendPreflightRequest() throws Exception {
         SecurityConfig securityConfig = new SecurityConfig(null, null);
+        ReflectionTestUtils.setField(
+                securityConfig,
+                "allowedOrigins",
+                new String[]{"https://ozlemyesilsigortam.info", "http://localhost:3000"}
+        );
         CorsConfigurationSource source = securityConfig.corsConfigurationSource();
         MockHttpServletRequest request = new MockHttpServletRequest("OPTIONS", "/api/auth/login");
         request.setServletPath("/api/auth/login");
@@ -34,7 +40,6 @@ class SecurityConfigTest {
         assertNotNull(configuration);
         assertTrue(configuration.getAllowedOriginPatterns().contains("http://localhost:3000"));
         assertTrue(configuration.getAllowedOriginPatterns().contains("https://ozlemyesilsigortam.info"));
-        assertTrue(configuration.getAllowedOriginPatterns().contains("https://www.ozlemyesilsigortam.info"));
         assertEquals(
                 List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"),
                 configuration.getAllowedMethods()
